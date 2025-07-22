@@ -1,6 +1,5 @@
-import { BackgroundImg, HeaderBar, Hero, LogoImage } from './styles'
-
 import logo from '../../assets/images/logo.png'
+import { BackgroundImg, HeaderBar, Hero, LogoImage } from './styles'
 
 const Header = () => (
   <BackgroundImg>

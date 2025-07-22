@@ -9,7 +9,9 @@ export const Container = styled.section`
 export const List = styled.ul<Omit<Props, 'restaurants'>>`
   display: grid;
   grid-template-columns: ${(props) =>
-    props.grid === '2' ? '1fr 1fr' : '1fr 1fr 1fr'};
+    props.grid === '2'
+      ? 'repeat(2, minmax(300px, 1fr))'
+      : 'repeat(3, minmax(300px, 1fr))'};
   column-gap: ${(props) => (props.grid === '2' ? '80px' : '32px')};
   margin-top: ${(props) => (props.grid === '2' ? '80px' : '56px')};
 `

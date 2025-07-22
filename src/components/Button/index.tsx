@@ -19,7 +19,11 @@ const Button = ({ type, title, to, onClick, children }: Props) => {
     )
   }
 
-  return <ButtonOrange title={title}>{children}</ButtonOrange>
+  return (
+    <ButtonOrange to={to || '/'} title={title}>
+      {children}
+    </ButtonOrange>
+  )
 }
 
 export default Button

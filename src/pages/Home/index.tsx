@@ -4,6 +4,7 @@ import Restaurant from '../../models/Restaurant'
 
 import hiokiImg from '../../assets/images/hioki-sushi.png'
 import laDolceImg from '../../assets/images/la-dolce.png'
+import Footer from '../../components/Footer'
 
 const restaurantesList: Restaurant[] = [
   {
@@ -66,6 +67,7 @@ const Home = () => (
   <>
     <Header />
     <ProductsList grid={'2'} restaurants={restaurantesList} />
+    <Footer />
   </>
 )
 

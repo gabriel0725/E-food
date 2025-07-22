@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import { Link } from 'react-router-dom'
 import { cores } from '../../styles'
 
-export const ButtonOrange = styled.a`
+export const ButtonOrange = styled(Link)`
   background-color: ${cores.laranja};
   color: ${cores.bege};
   padding: 6px;
@@ -24,4 +24,5 @@ export const ButtonBege = styled.button`
   font-size: 14px;
   font-weight: bold;
   border: none;
+  cursor: pointer;
 `

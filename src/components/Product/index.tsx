@@ -1,38 +1,44 @@
 import { Card, Descricao, Infos, Titulo, TituloContainer } from './styles'
 
-import hiokiImg from '../../assets/images/hioki-sushi.png'
 import star from '../../assets/images/estrela.svg'
-import Button from '../Button'
 import Tag from '../Tag'
 
 type Props = {
   description: string
   image: string
   title: string
-  infos: string[]
-  rank: string
+  infos?: string[]
+  rank?: string
+  grid: '2' | '3'
+  children: React.ReactNode
 }
 
-const Product = ({ description, image, title, rank, infos }: Props) => (
-  <Card>
+const Product = ({
+  description,
+  image,
+  title,
+  rank,
+  infos,
+  grid,
+  children
+}: Props) => (
+  <Card grid={grid}>
     <img src={image} alt={title} />
     <Infos>
-      {infos.map((info) => (
+      {infos?.map((info) => (
         <Tag key={info}>{info}</Tag>
       ))}
     </Infos>
     <div className="container-infos">
       <TituloContainer>
-        <Titulo>{title}</Titulo>
+        <Titulo grid={grid}>{title}</Titulo>
         <div className="nota-estrela">
           <span>{rank}</span>
           <img src={star} alt="" />
         </div>
       </TituloContainer>
-      <Descricao>{description}</Descricao>
-      <Button type="link" title="clique aqui e saiba mais sobre o restaurante">
-        Saiba mais
-      </Button>
+      <Descricao grid={grid}>{description}</Descricao>
+      {children}
     </div>
   </Card>
 )

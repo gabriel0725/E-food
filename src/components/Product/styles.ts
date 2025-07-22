@@ -1,15 +1,34 @@
 import styled from 'styled-components'
 import { cores } from '../../styles'
 
-export const Card = styled.div`
-  background-color: ${cores.branca};
+type CardProps = {
+  grid: '2' | '3'
+}
+
+export const Card = styled.div<{ grid: '2' | '3' }>`
+  background-color: ${(props) =>
+    props.grid === '3' ? `${cores.laranja}` : `${cores.branca}`};
+  color: ${(props) => (props.grid === '3' ? `${cores.bege}` : 'inherit')};
   border: 1px solid ${cores.laranja};
   position: relative;
   padding-bottom: 12px;
   margin-bottom: 48px;
 
+  .nota-estrela {
+    display: ${(props) => (props.grid === '3' ? `none` : `flex`)};
+  }
+
+  img {
+    width: 100%;
+    padding: ${(props) => (props.grid === '3' ? '8px' : '0px')};
+  }
+
   .container-infos {
-    padding: 0 8px 0 8px;
+    padding: 0 8px;
+  }
+
+  .nota-estrela span {
+    color: ${(props) => (props.grid === '3' ? `${cores.bege}` : 'inherit')};
   }
 `
 
@@ -22,7 +41,6 @@ export const TituloContainer = styled.div`
   font-size: 18px;
 
   .nota-estrela {
-    display: flex;
     align-items: center;
   }
 
@@ -31,14 +49,14 @@ export const TituloContainer = styled.div`
   }
 `
 
-export const Titulo = styled.h3`
-  display: block;
+export const Titulo = styled.h3<{ grid: '2' | '3' }>`
+  color: ${(props) => (props.grid === '3' ? `${cores.bege}` : 'inherit')};
 `
 
-export const Descricao = styled.p`
+export const Descricao = styled.p<{ grid: '2' | '3' }>`
+  color: ${(props) => (props.grid === '3' ? `${cores.bege}` : 'inherit')};
   font-size: 14px;
   line-height: 22px;
-  display: block;
   margin-top: 16px;
   margin-bottom: 16px;
 `
