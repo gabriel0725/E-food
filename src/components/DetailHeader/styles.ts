@@ -1,7 +1,6 @@
 import styled from 'styled-components'
-
 import bgImg from '../../assets/images/fundo.png'
-import heroImg from '../../assets/images/apresentacao.png'
+
 import { cores } from '../../styles'
 
 export const BackgroundImg = styled.div`
@@ -26,10 +25,21 @@ export const HeaderList = styled.ul`
 `
 
 export const Hero = styled.div`
-  background-image: url(${heroImg});
   height: 280px;
   background-size: cover;
+  background-repeat: no-repeat;
   background-position: center;
+  position: relative;
+
+  &::after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    content: '';
+  }
 `
 
 export const HeroTxt = styled.div`
@@ -37,6 +47,7 @@ export const HeroTxt = styled.div`
   display: flex;
   font-size: 32px;
   padding-top: 214px;
+  z-index: 1;
 
   span {
     color: ${cores.branca};

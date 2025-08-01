@@ -13,6 +13,7 @@ export const Card = styled.div<{ grid: '2' | '3' }>`
   position: relative;
   padding-bottom: 12px;
   margin-bottom: 48px;
+  max-height: ${(props) => (props.grid === '3' ? `340px` : `auto`)};
 
   .nota-estrela {
     display: ${(props) => (props.grid === '3' ? `none` : `flex`)};
@@ -21,6 +22,11 @@ export const Card = styled.div<{ grid: '2' | '3' }>`
   img {
     width: 100%;
     padding: ${(props) => (props.grid === '3' ? '8px' : '0px')};
+  }
+
+  .fotoRestaurante {
+    height: ${(props) => (props.grid === '3' ? `168px` : `218px`)};
+    object-fit: cover;
   }
 
   .container-infos {

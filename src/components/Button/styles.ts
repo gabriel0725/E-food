@@ -24,5 +24,6 @@ export const ButtonBege = styled.button`
   font-size: 14px;
   font-weight: bold;
   border: none;
+  width: 100%;
   cursor: pointer;
 `

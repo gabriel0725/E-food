@@ -20,7 +20,7 @@ const Button = ({ type, title, to, onClick, children }: Props) => {
   }
 
   return (
-    <ButtonOrange to={to || '/'} title={title}>
+    <ButtonOrange to={to as string} title={title}>
       {children}
     </ButtonOrange>
   )
