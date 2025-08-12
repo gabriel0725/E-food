@@ -1,5 +1,6 @@
 import styled from 'styled-components'
 import bgImg from '../../assets/images/fundo.png'
+import teste from '../../assets/images/hioki-sushi.png'
 
 import { cores } from '../../styles'
 
@@ -61,4 +62,9 @@ export const HeroTxt = styled.div`
     font-weight: bold;
     font-size: 32px;
   }
+`
+
+export const CartButton = styled.a`
+  display: flex;
+  cursor: pointer;
 `

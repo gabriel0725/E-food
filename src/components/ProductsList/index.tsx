@@ -5,6 +5,8 @@ import { Container, List, Modal, ModalContent } from './styles'
 import { Restaurant } from '../../pages/Home'
 import { useState } from 'react'
 import close from '../../assets/images/fechar.png'
+import { useDispatch } from 'react-redux'
+import { add, open } from '../../store/reducers/cart'
 
 export type Props = {
   restaurants?: Restaurant[]
@@ -13,6 +15,7 @@ export type Props = {
 }
 
 interface ModalState {
+  id: number
   porcao: string
   url: string
   isVisible: boolean
@@ -30,6 +33,7 @@ export const formataPreco = (preco = 0) => {
 
 const ProductsList = ({ restaurants, foods, grid }: Props) => {
   const [modal, setModal] = useState<ModalState>({
+    id: 0,
     isVisible: false,
     url: '',
     porcao: '',
@@ -40,6 +44,7 @@ const ProductsList = ({ restaurants, foods, grid }: Props) => {
 
   const closeModal = () => {
     setModal({
+      id: 0,
       isVisible: false,
       url: '',
       porcao: '',
@@ -67,6 +72,23 @@ const ProductsList = ({ restaurants, foods, grid }: Props) => {
     }
 
     return tags
+  }
+
+  const dispatch = useDispatch()
+
+  const addToCart = () => {
+    dispatch(
+      add({
+        id: modal.id,
+        nome: modal.titulo,
+        descricao: modal.descricao,
+        foto: modal.url,
+        preco: modal.preco,
+        porcao: modal.porcao
+      }),
+      closeModal(),
+      dispatch(open())
+    )
   }
 
   return (
@@ -112,6 +134,7 @@ const ProductsList = ({ restaurants, foods, grid }: Props) => {
                     title="botao"
                     onClick={() => {
                       setModal({
+                        id: dish.id,
                         isVisible: true,
                         url: dish.foto,
                         porcao: dish.porcao,
@@ -148,7 +171,11 @@ const ProductsList = ({ restaurants, foods, grid }: Props) => {
                   </li>
                   <li>
                     <div className="btn_width">
-                      <Button type="button" title="Adicionar ao carrinho">
+                      <Button
+                        onClick={addToCart}
+                        type="button"
+                        title="Adicionar ao carrinho"
+                      >
                         {`Adicionar ao carrinho - ${formataPreco(modal.preco)}`}
                       </Button>
                     </div>

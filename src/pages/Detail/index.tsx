@@ -1,24 +1,21 @@
-import { useEffect, useState } from 'react'
 import DetailHeader from '../../components/DetailHeader'
 import Footer from '../../components/Footer'
 import ProductsList from '../../components/ProductsList'
-import { Restaurant } from '../Home'
+import { useGetFeaturedRestaurantQuery } from '../../services/api'
 
 const Detail = () => {
-  const [cardapio, setCardapio] = useState<Restaurant[]>([])
+  const { data: cardapio } = useGetFeaturedRestaurantQuery()
 
-  useEffect(() => {
-    fetch('https://ebac-fake-api.vercel.app/api/efood/restaurantes')
-      .then((res) => res.json())
-      .then((res) => setCardapio(res))
-  }, [])
+  if (cardapio) {
+    return (
+      <>
+        <DetailHeader />
+        <ProductsList grid={'3'} foods={cardapio} />
+        <Footer />
+      </>
+    )
+  }
 
-  return (
-    <>
-      <DetailHeader />
-      <ProductsList grid={'3'} foods={cardapio} />
-      <Footer />
-    </>
-  )
+  return <h4>Carregando...</h4>
 }
 export default Detail

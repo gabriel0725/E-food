@@ -2,7 +2,7 @@ import Header from '../../components/Header'
 import ProductsList from '../../components/ProductsList'
 
 import Footer from '../../components/Footer'
-import { useEffect, useState } from 'react'
+import { useGetFeaturedRestaurantQuery } from '../../services/api'
 
 export type Restaurant = {
   id: number
@@ -25,21 +25,19 @@ export type Restaurant = {
 }
 
 const Home = () => {
-  const [restaurantes, setRestaurantes] = useState<Restaurant[]>([])
+  const { data: restaurantes } = useGetFeaturedRestaurantQuery()
 
-  useEffect(() => {
-    fetch('https://ebac-fake-api.vercel.app/api/efood/restaurantes')
-      .then((res) => res.json())
-      .then((res) => setRestaurantes(res))
-  })
+  if (restaurantes) {
+    return (
+      <>
+        <Header />
+        <ProductsList grid={'2'} restaurants={restaurantes} />
+        <Footer />
+      </>
+    )
+  }
 
-  return (
-    <>
-      <Header />
-      <ProductsList grid={'2'} restaurants={restaurantes} />
-      <Footer />
-    </>
-  )
+  return <h4>Carregando...</h4>
 }
 
 export default Home

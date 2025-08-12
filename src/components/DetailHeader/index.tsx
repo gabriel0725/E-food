@@ -1,24 +1,42 @@
-import { BackgroundImg, HeaderBar, HeaderList, Hero, HeroTxt } from './styles'
+import {
+  BackgroundImg,
+  CartButton,
+  HeaderBar,
+  HeaderList,
+  Hero,
+  HeroTxt
+} from './styles'
 
 import logo from '../../assets/images/logo.png'
 import { Link, useParams } from 'react-router-dom'
-import { useEffect, useState } from 'react'
-import { Restaurant } from '../../pages/Home'
+import { useGetRestaurantQuery } from '../../services/api'
+import { useDispatch, useSelector } from 'react-redux'
+
+import { open } from '../../store/reducers/cart'
+import { RootReducer } from '../../store'
 
 const DetailHeader = () => {
-  const { id } = useParams<{ id: string }>()
-  const [capaRestaurant, setCapaRestaurant] = useState<Restaurant>()
+  const dispatch = useDispatch()
+  const { items } = useSelector((state: RootReducer) => state.cart)
 
-  useEffect(() => {
-    fetch('https://ebac-fake-api.vercel.app/api/efood/restaurantes')
-      .then((res) => res.json())
-      .then((res) => {
-        const restauranteEncontrado = res.find(
-          (restaurante: Restaurant) => restaurante.id === Number(id)
-        )
-        setCapaRestaurant(restauranteEncontrado)
-      })
-  }, [id])
+  const openCart = () => {
+    dispatch(open())
+  }
+
+  const { id } = useParams<{ id: string }>()
+  const {
+    data: capaRestaurant,
+    isLoading,
+    isError
+  } = useGetRestaurantQuery(id!)
+
+  if (isLoading) {
+    return <p>Carregando...</p>
+  }
+
+  if (isError || !capaRestaurant) {
+    return <p>Erro ao carregar o restaurante</p>
+  }
 
   return (
     <BackgroundImg>
@@ -31,7 +49,9 @@ const DetailHeader = () => {
             <img src={logo} alt="Logo E-food" />
           </li>
           <li>
-            <a href="#">0 produto(s) no carrinho</a>
+            <CartButton onClick={openCart}>
+              {items.length} produto(s) no carrinho
+            </CartButton>
           </li>
         </HeaderList>
       </HeaderBar>
