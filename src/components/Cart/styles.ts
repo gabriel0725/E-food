@@ -3,6 +3,18 @@ import { cores } from '../../styles'
 
 import fechar from '../../assets/images/lixeira-de-reciclagem 1.png'
 
+type InputGroupProps = {
+  maxWidth?: string
+}
+
+type RowProps = {
+  marginTop?: string
+}
+
+type TabButtonProps = {
+  isActive: boolean
+}
+
 export const Overlay = styled.div`
   position: absolute;
   top: 0;
@@ -88,5 +100,56 @@ export const CartItem = styled.li`
     bottom: 8px;
     right: 8px;
     cursor: pointer;
+  }
+`
+export const Title = styled.h2`
+  font-size: 16px;
+  font-weight: bold;
+  color: ${cores.begeClaro};
+`
+
+export const Row = styled.div<RowProps>`
+  display: flex;
+  column-gap: 24px;
+  margin-top: ${(props) => props.marginTop || '0'};
+  align-items: flex-end;
+`
+
+export const InputGroup = styled.div<InputGroupProps>`
+  flex: auto;
+
+  max-width: ${(props) => props.maxWidth || 'auto'};
+
+  h2 {
+    margin-bottom: 16px;
+  }
+
+  label {
+    font-size: 14px;
+    margin-bottom: 8px;
+    display: block;
+    color: ${cores.bege};
+    margin-top: 8px;
+  }
+
+  input,
+  select {
+    background-color: ${cores.bege};
+    border: 1px solid ${cores.bege};
+    height: 32px;
+    padding: 0 8px;
+    width: 100%;
+
+    &.error {
+      border: solid 1px red;
+    }
+  }
+
+  .btnPaymentStep {
+    margin-top: 24px;
+
+    li {
+      padding-bottom: 8px;
+    }
   }
 `

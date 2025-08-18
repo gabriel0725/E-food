@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { Provider } from 'react-redux'
 import { store } from './store'
 import Cart from './components/Cart'
+import Footer from './components/Footer'
 
 function App() {
   return (
@@ -11,8 +12,9 @@ function App() {
       <BrowserRouter>
         <GlobalCss />
         <Rotas />
+        <Cart />
       </BrowserRouter>
-      <Cart />
+      <Footer />
     </Provider>
   )
 }
