@@ -1,5 +1,5 @@
 import { styled } from 'styled-components'
-import { cores } from '../../styles'
+import { breakpoints, cores } from '../../styles'
 
 import fechar from '../../assets/images/lixeira-de-reciclagem 1.png'
 
@@ -52,6 +52,10 @@ export const Sidebar = styled.aside`
     line-height: 22px;
     color: ${cores.bege};
     margin-bottom: 16px;
+  }
+
+  @media (max-width: ${breakpoints.desktop}) {
+    width: 80%;
   }
 `
 

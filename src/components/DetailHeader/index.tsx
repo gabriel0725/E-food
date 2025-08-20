@@ -1,10 +1,12 @@
 import {
   BackgroundImg,
   CartButton,
+  Hamburger,
   HeaderBar,
   HeaderList,
   Hero,
-  HeroTxt
+  HeroTxt,
+  NavMobile
 } from './styles'
 
 import logo from '../../assets/images/logo.png'
@@ -12,12 +14,16 @@ import { Link, useParams } from 'react-router-dom'
 import { useGetRestaurantQuery } from '../../services/api'
 import { useDispatch, useSelector } from 'react-redux'
 
+import carrinho from '../../assets/images/carrinhos.svg'
+
 import { open } from '../../store/reducers/cart'
 import { RootReducer } from '../../store'
+import { useState } from 'react'
 
 const DetailHeader = () => {
   const dispatch = useDispatch()
   const { items } = useSelector((state: RootReducer) => state.cart)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
   const openCart = () => {
     dispatch(open())
@@ -42,7 +48,12 @@ const DetailHeader = () => {
     <BackgroundImg>
       <HeaderBar className="container">
         <HeaderList>
-          <li>
+          <Hamburger onClick={() => setIsMenuOpen(!isMenuOpen)}>
+            <span></span>
+            <span></span>
+            <span></span>
+          </Hamburger>
+          <li className="mobile-menu-restaurant">
             <Link to="/">Restaurantes</Link>
           </li>
           <li>
@@ -50,10 +61,20 @@ const DetailHeader = () => {
           </li>
           <li>
             <CartButton onClick={openCart}>
-              {items.length} produto(s) no carrinho
+              {items.length} <span> - produto(s) no carrinho</span>
+              <img src={carrinho} alt="Icone carrinho de compras" />
             </CartButton>
           </li>
         </HeaderList>
+        <NavMobile className={isMenuOpen ? 'is-open' : ''}>
+          <HeaderList>
+            <li className="mobile-menu-restaurant">
+              <Link to="/" onClick={() => setIsMenuOpen(false)}>
+                Restaurantes
+              </Link>
+            </li>
+          </HeaderList>
+        </NavMobile>
       </HeaderBar>
       <Hero style={{ backgroundImage: `url(${capaRestaurant?.capa})` }}>
         <HeroTxt className="container">
