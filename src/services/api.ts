@@ -6,24 +6,28 @@ type Product = {
   price: number
 }
 
-type PurchasePayload = {
-  products: Product[]
-  billing: {
-    name: string
-  }
-  delivery: {
-    address: string
-    city: string
-    postalCode: string
-    houseNumber: string
-    addressComplement: string
+export type PurchasePayload = {
+  products?: Product[]
+  delivery?: {
+    receiver: string
+    address: {
+      description: string
+      city: string
+      zipCode: string
+      number: number
+      complement?: string
+    }
   }
   payment: {
-    cardDisplayName: string
-    cardNumber: string
-    month: number
-    year: number
-    code?: number
+    card: {
+      name: string
+      number: string
+      code: number
+      expires: {
+        month: number
+        year: number
+      }
+    }
   }
 }
 

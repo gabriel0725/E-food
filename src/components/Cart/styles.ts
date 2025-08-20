@@ -46,6 +46,13 @@ export const Sidebar = styled.aside`
   padding: 40px 8px 0 8px;
   max-width: 360px;
   width: 100%;
+
+  p {
+    font-size: 14px;
+    line-height: 22px;
+    color: ${cores.bege};
+    margin-bottom: 16px;
+  }
 `
 
 export const DishDetail = styled.div`
@@ -105,7 +112,8 @@ export const CartItem = styled.li`
 export const Title = styled.h2`
   font-size: 16px;
   font-weight: bold;
-  color: ${cores.begeClaro};
+  color: ${cores.bege};
+  margin-bottom: 16px;
 `
 
 export const Row = styled.div<RowProps>`
@@ -119,10 +127,6 @@ export const InputGroup = styled.div<InputGroupProps>`
   flex: auto;
 
   max-width: ${(props) => props.maxWidth || 'auto'};
-
-  h2 {
-    margin-bottom: 16px;
-  }
 
   label {
     font-size: 14px;
@@ -141,7 +145,7 @@ export const InputGroup = styled.div<InputGroupProps>`
     width: 100%;
 
     &.error {
-      border: solid 1px red;
+      border: solid 2px red;
     }
   }
 

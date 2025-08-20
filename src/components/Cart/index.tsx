@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { useState } from 'react'
 import Button from '../Button'
+import InputMask from 'react-input-mask'
 import {
   Overlay,
   CartContainer,
@@ -13,19 +14,21 @@ import {
   Row
 } from './styles'
 import { RootReducer } from '../../store'
-import { close, remove } from '../../store/reducers/cart'
+import { close, remove, clear } from '../../store/reducers/cart'
 import * as Yup from 'yup'
 
 import { formataPreco } from '../ProductsList'
 import { useFormik } from 'formik'
 import { usePurchaseMutation } from '../../services/api'
+import { useNavigate } from 'react-router-dom'
 
 const Cart = () => {
   const { isOpen, items } = useSelector((state: RootReducer) => state.cart)
   const [step, setStep] = useState<'cart' | 'address' | 'payment' | 'finish'>(
     'cart'
   )
-  const [purchase, { data, isSuccess, isLoading }] = usePurchaseMutation()
+  const navigate = useNavigate()
+  const [purchase, { data, isLoading }] = usePurchaseMutation()
 
   const goToFinish = () => setStep('finish')
   const goToPayment = () => setStep('payment')
@@ -34,68 +37,59 @@ const Cart = () => {
 
   const form = useFormik({
     initialValues: {
-      fullname: '', //
-      address: '',
+      receiver: '',
+      description: '',
       city: '',
-      postalCode: '',
-      houseNumber: '',
-      addressComplement: '',
-      cardDisplayName: '',
+      zipCode: '',
+      number: '',
+      complement: '',
+      cardName: '',
       cardNumber: '',
-      expiresMonth: '',
-      expiresYear: '',
-      cardCode: ''
+      code: '',
+      month: '',
+      year: ''
     },
     validationSchema: Yup.object({
-      fullname: Yup.string()
-        .min(5, 'O nome precisa ter pelo menos 5 caracteres')
-        .required('O campo é obrigatório'),
-      address: Yup.string()
-        .min(5, 'Por favor informar o endereço completo')
-        .required('O campo é obrigatório'),
-      city: Yup.string()
-        .min(5, 'Por favor informar o nome da cidade completa')
-        .required('O campo é obrigatório'),
-      postalCode: Yup.string()
-        .min(9, 'Por favor informar o CEP')
-        .required('O campo é obrigatório'),
-      houseNumber: Yup.string()
-        .min(2, 'Por favor informar o número da residencia')
-        .required('O campo é obrigatório'),
-      addressComplement: Yup.string().min(
-        5,
-        'informar o complemento do endereço (apto, bloco etc)'
-      ),
-      cardDisplayName: Yup.string().required('O campo é obrigatório'),
+      // Campos de endereço
+      receiver: Yup.string().required('O campo é obrigatório'),
+      description: Yup.string().required('O campo é obrigatório'),
+      city: Yup.string().required('O campo é obrigatório'),
+      zipCode: Yup.string().required('O campo é obrigatório'),
+      number: Yup.string().required('O campo é obrigatório'),
+
+      // Campos de pagamento
+      cardName: Yup.string().required('O campo é obrigatório'),
       cardNumber: Yup.string().required('O campo é obrigatório'),
-      expiresMonth: Yup.string()
-        .min(2, 'Por favor informar o mês corretamente')
-        .required('O campo é obrigatório'),
-      expiresYear: Yup.string()
-        .min(2, 'Por favor informar o ano corretamente')
-        .required('O campo é obrigatório'),
-      cardCode: Yup.string()
-        .min(3, 'Por favor informar o código de segurança corretamente')
+      code: Yup.string().required('O campo é obrigatório'),
+      month: Yup.string()
         .required('O campo é obrigatório')
+        .matches(/^(0[1-9]|1[0-2])$/, 'Mês inválido'),
+      year: Yup.string()
+        .required('O campo é obrigatório')
+        .matches(/^[0-9]{4}$/, 'Ano inválido')
     }),
     onSubmit: (values) => {
       purchase({
-        billing: {
-          name: values.fullname
-        },
         delivery: {
-          address: values.address,
-          city: values.city,
-          postalCode: values.postalCode,
-          houseNumber: values.houseNumber,
-          addressComplement: values.addressComplement
+          receiver: values.receiver,
+          address: {
+            description: values.description,
+            city: values.city,
+            zipCode: values.zipCode,
+            number: Number(values.number),
+            complement: values.complement
+          }
         },
         payment: {
-          cardDisplayName: values.cardDisplayName,
-          cardNumber: values.cardNumber,
-          month: Number(values.expiresMonth),
-          year: Number(values.expiresYear),
-          code: Number(values.cardCode)
+          card: {
+            name: values.cardName,
+            number: values.cardNumber,
+            code: Number(values.code),
+            expires: {
+              month: Number(values.month),
+              year: Number(values.year)
+            }
+          }
         },
         products: items.map((item) => ({
           id: item.id,
@@ -109,7 +103,6 @@ const Cart = () => {
     const isTouched = fieldname in form.touched
     const isInvalid = fieldname in form.errors
     const hasError = isTouched && isInvalid
-
     return hasError
   }
 
@@ -126,6 +119,70 @@ const Cart = () => {
     }, 0)
   }
 
+  // Valida somente os campos do endereço
+  const handleSubmitAddress = async () => {
+    await form.validateForm()
+    if (
+      !form.errors.receiver &&
+      !form.errors.description &&
+      !form.errors.city &&
+      !form.errors.zipCode &&
+      !form.errors.number &&
+      form.values.receiver &&
+      form.values.description &&
+      form.values.city &&
+      form.values.zipCode &&
+      form.values.number
+    ) {
+      form.handleSubmit()
+      goToPayment()
+      console.log('apertei o botao do endereço', data)
+    } else {
+      form.setTouched(
+        {
+          receiver: true,
+          description: true,
+          city: true,
+          zipCode: true,
+          number: true
+        },
+        true
+      )
+    }
+  }
+
+  // Valida somente os campos do pagamento
+  const handleSubmitPayment = async () => {
+    await form.validateForm()
+    if (
+      !form.errors.cardName &&
+      !form.errors.cardNumber &&
+      !form.errors.code &&
+      !form.errors.month &&
+      !form.errors.year &&
+      form.values.cardName &&
+      form.values.cardNumber &&
+      form.values.code &&
+      form.values.month &&
+      form.values.year
+    ) {
+      form.handleSubmit()
+      goToFinish()
+      console.log('apertei o ultimo botao', data)
+    } else {
+      form.setTouched(
+        {
+          cardName: true,
+          cardNumber: true,
+          code: true,
+          month: true,
+          year: true
+        },
+        true
+      )
+    }
+  }
+
   return (
     <CartContainer className={isOpen ? 'is-open' : ''}>
       <Overlay onClick={closeCart} />
@@ -133,33 +190,41 @@ const Cart = () => {
         {step === 'cart' && (
           <>
             <DishDetail>
-              <ul>
-                {items.map((item) => (
-                  <CartItem key={item.id}>
-                    <img src={item.foto} alt={item.nome} />
-                    <div>
-                      <h3>{item.nome}</h3>
-                      <span>{formataPreco(item.preco)}</span>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => dispatch(remove(item.id))}
-                    />
-                  </CartItem>
-                ))}
-              </ul>
+              {items.length === 0 ? (
+                <p>O carrinho está vazio</p>
+              ) : (
+                <ul>
+                  {items.map((item) => (
+                    <CartItem key={item.id}>
+                      <img src={item.foto} alt={item.nome} />
+                      <div>
+                        <h3>{item.nome}</h3>
+                        <span>{formataPreco(item.preco)}</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => dispatch(remove(item.id))}
+                      />
+                    </CartItem>
+                  ))}
+                </ul>
+              )}
             </DishDetail>
-            <Prices>
-              <p>Valor total:</p>
-              <span>{formataPreco(getTotalPrice())}</span>
-            </Prices>
-            <Button
-              type="button"
-              title="continuar com a entrega"
-              onClick={goToAddress}
-            >
-              Continuar com a entrega
-            </Button>
+            {items.length > 0 && (
+              <>
+                <Prices>
+                  <p>Valor total:</p>
+                  <span>{formataPreco(getTotalPrice())}</span>
+                </Prices>
+                <Button
+                  type="button"
+                  title="continuar com a entrega"
+                  onClick={goToAddress}
+                >
+                  Continuar com a entrega
+                </Button>
+              </>
+            )}
           </>
         )}
 
@@ -167,27 +232,27 @@ const Cart = () => {
           <form onSubmit={form.handleSubmit}>
             <InputGroup>
               <Title>Entrega</Title>
-              <label htmlFor="fullname">Quem irá receber</label>
+              <label htmlFor="receiver">Quem irá receber</label>
               <input
-                id="fullname"
+                id="receiver"
                 type="text"
-                name="fullname"
-                value={form.values.fullname}
+                name="receiver"
+                value={form.values.receiver}
                 onChange={form.handleChange}
                 onBlur={form.handleBlur}
-                className={checkInputHasError('fullname') ? 'error' : ''}
+                className={checkInputHasError('receiver') ? 'error' : ''}
               />
             </InputGroup>
             <InputGroup>
-              <label htmlFor="address">Endereço</label>
+              <label htmlFor="description">Endereço</label>
               <input
-                id="address"
+                id="description"
                 type="text"
-                name="address"
-                value={form.values.address}
+                name="description"
+                value={form.values.description}
                 onChange={form.handleChange}
                 onBlur={form.handleBlur}
-                className={checkInputHasError('address') ? 'error' : ''}
+                className={checkInputHasError('description') ? 'error' : ''}
               />
             </InputGroup>
             <InputGroup>
@@ -204,49 +269,47 @@ const Cart = () => {
             </InputGroup>
             <Row>
               <InputGroup>
-                <label htmlFor="postalCode">CEP</label>
-                <input
-                  id="postalCode"
+                <label htmlFor="zipCode">CEP</label>
+                <InputMask
+                  id="zipCode"
                   type="text"
-                  name="postalCode"
-                  value={form.values.postalCode}
+                  name="zipCode"
+                  value={form.values.zipCode}
                   onChange={form.handleChange}
                   onBlur={form.handleBlur}
-                  className={checkInputHasError('postalCode') ? 'error' : ''}
+                  className={checkInputHasError('zipCode') ? 'error' : ''}
+                  mask="99999-999"
                 />
               </InputGroup>
               <InputGroup>
-                <label htmlFor="houseNumber">Número</label>
+                <label htmlFor="number">Número</label>
                 <input
-                  id="houseNumber"
+                  id="number"
                   type="text"
-                  name="houseNumber"
-                  value={form.values.houseNumber}
+                  name="number"
+                  value={form.values.number}
                   onChange={form.handleChange}
                   onBlur={form.handleBlur}
-                  className={checkInputHasError('houseNumber') ? 'error' : ''}
+                  className={checkInputHasError('number') ? 'error' : ''}
                 />
               </InputGroup>
             </Row>
             <InputGroup>
-              <label htmlFor="addressComplement">Complemento (opcional)</label>
+              <label htmlFor="complement">Complemento (opcional)</label>
               <input
-                id="addressComplement"
+                id="complement"
                 type="text"
-                name="addressComplement"
-                value={form.values.addressComplement}
+                name="complement"
+                value={form.values.complement}
                 onChange={form.handleChange}
                 onBlur={form.handleBlur}
-                className={
-                  checkInputHasError('addressComplement') ? 'error' : ''
-                }
               />
               <ul className="btnPaymentStep">
                 <li>
                   <Button
                     type="button"
                     title="continuar com o pagamento"
-                    onClick={(form.handleSubmit, goToPayment)}
+                    onClick={handleSubmitAddress}
                   >
                     Continuar para o pagamento
                   </Button>
@@ -268,22 +331,24 @@ const Cart = () => {
         {step === 'payment' && (
           <form onSubmit={form.handleSubmit}>
             <InputGroup>
-              <Title>{`Pagamento - Valor a pagar ${formataPreco(getTotalPrice())}`}</Title>
-              <label htmlFor="cardDisplayName">Nome no cartão</label>
+              <Title>{`Pagamento - Valor a pagar ${formataPreco(
+                getTotalPrice()
+              )}`}</Title>
+              <label htmlFor="cardName">Nome no cartão</label>
               <input
-                id="cardDisplayName"
+                id="cardName"
                 type="text"
-                name="cardDisplayName"
-                value={form.values.cardDisplayName}
+                name="cardName"
+                value={form.values.cardName}
                 onChange={form.handleChange}
                 onBlur={form.handleBlur}
-                className={checkInputHasError('cardDisplayName') ? 'error' : ''}
+                className={checkInputHasError('cardName') ? 'error' : ''}
               />
             </InputGroup>
             <Row>
               <InputGroup>
                 <label htmlFor="cardNumber">Número do cartão</label>
-                <input
+                <InputMask
                   id="cardNumber"
                   type="text"
                   name="cardNumber"
@@ -291,44 +356,48 @@ const Cart = () => {
                   onChange={form.handleChange}
                   onBlur={form.handleBlur}
                   className={checkInputHasError('cardNumber') ? 'error' : ''}
+                  mask="9999 9999 9999 9999"
                 />
               </InputGroup>
               <InputGroup maxWidth="88px">
-                <label htmlFor="cardCode">CVV</label>
-                <input
-                  id="cardCode"
+                <label htmlFor="code">CVV</label>
+                <InputMask
+                  id="code"
                   type="text"
-                  name="cardCode"
-                  value={form.values.cardCode}
+                  name="code"
+                  value={form.values.code}
                   onChange={form.handleChange}
                   onBlur={form.handleBlur}
-                  className={checkInputHasError('cardCode') ? 'error' : ''}
+                  className={checkInputHasError('code') ? 'error' : ''}
+                  mask="999"
                 />
               </InputGroup>
             </Row>
             <Row>
               <InputGroup>
-                <label htmlFor="expiresMonth">Mês de vencimento</label>
-                <input
-                  id="expiresMonth"
+                <label htmlFor="month">Mês de vencimento</label>
+                <InputMask
+                  id="month"
                   type="text"
-                  name="expiresMonth"
-                  value={form.values.expiresMonth}
+                  name="month"
+                  value={form.values.month}
                   onChange={form.handleChange}
                   onBlur={form.handleBlur}
-                  className={checkInputHasError('expiresMonth') ? 'error' : ''}
+                  className={checkInputHasError('month') ? 'error' : ''}
+                  mask="99"
                 />
               </InputGroup>
               <InputGroup>
-                <label htmlFor="expiresYear">Ano de vencimento</label>
-                <input
-                  id="expiresYear"
+                <label htmlFor="year">Ano de vencimento</label>
+                <InputMask
+                  id="year"
                   type="text"
-                  name="expiresYear"
-                  value={form.values.expiresYear}
+                  name="year"
+                  value={form.values.year}
                   onChange={form.handleChange}
                   onBlur={form.handleBlur}
-                  className={checkInputHasError('expiresYear') ? 'error' : ''}
+                  className={checkInputHasError('year') ? 'error' : ''}
+                  mask="9999"
                 />
               </InputGroup>
             </Row>
@@ -338,7 +407,7 @@ const Cart = () => {
                   <Button
                     type="button"
                     title="continuar com o pagamento"
-                    onClick={(form.handleSubmit, goToFinish)}
+                    onClick={handleSubmitPayment}
                   >
                     {isLoading ? 'Finalizando compra...' : 'Finalizar compra'}
                   </Button>
@@ -360,10 +429,31 @@ const Cart = () => {
         {step === 'finish' && (
           <>
             <Title> Pedido realizado - {data?.orderId}</Title>
+            <p>
+              Estamos felizes em informar que seu pedido já está em processo de
+              preparação e, em breve, será entregue no endereço fornecido.
+            </p>
+            <p>
+              Gostaríamos de ressaltar que nossos entregadores não estão
+              autorizados a realizar cobranças extras.
+            </p>
+            <p>
+              Lembre-se da importância de higienizar as mãos após o recebimento
+              do pedido, garantindo assim sua segurança e bem-estar durante a
+              refeição.
+            </p>
+            <p>
+              Esperamos que desfrute de uma deliciosa e agradável experiência
+              gastronômica. Bom apetite!
+            </p>
             <Button
-              type="submit"
-              title="continuar com o pagamento"
-              onClick={closeCart}
+              type="button"
+              title="concluir"
+              onClick={() => {
+                dispatch(clear())
+                closeCart()
+                navigate('/')
+              }}
             >
               Concluir
             </Button>
