@@ -11,7 +11,7 @@ export const BackgroundImg = styled.div`
   padding-bottom: 40px;
 
   @media (max-width: ${breakpoints.tablet}) {
-    height: 500px;
+    height: 400px;
   }
 `
 
@@ -19,23 +19,37 @@ export const NavMobile = styled.nav`
   display: none;
 
   &.is-open {
-    display: block;
-    background-color: ${cores.laranja};
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: ${cores.bege};
     padding: 16px;
     position: absolute;
-    top: 70px;
-    left: 0;
-    width: 100%;
+    top: 100%;
+    right: 50%;
+    transform: translateX(50%);
+    width: 200px;
+    border-radius: 8px;
     z-index: 999;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 
-    .mobile-menu-restaurant {
+    a {
+      color: ${cores.laranja};
+      font-weight: bold;
+      text-decoration: none;
       display: block;
+      padding: 8px 0;
+
+      &:hover {
+        opacity: 0.8;
+      }
     }
   }
 `
 
 export const HeaderBar = styled.header`
   text-align: center;
+  position: relative;
 `
 
 export const HeaderList = styled.ul`
@@ -49,7 +63,7 @@ export const HeaderList = styled.ul`
   @media (max-width: ${breakpoints.tablet}) {
     margin-left: 0;
     display: flex;
-    max-height: 230px;
+    max-height: 128px;
     height: 100%;
 
     li img {
@@ -113,7 +127,7 @@ export const CartButton = styled.a`
   display: flex;
   cursor: pointer;
 
-  img {
+  .cartIcon {
     display: none;
   }
 
@@ -121,9 +135,9 @@ export const CartButton = styled.a`
     margin-left: 0;
     align-items: center;
 
-    img {
+    .cartIcon {
       max-width: 24px;
-      width: 100%;
+      display: block;
     }
 
     span {

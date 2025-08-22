@@ -62,18 +62,22 @@ const DetailHeader = () => {
           <li>
             <CartButton onClick={openCart}>
               {items.length} <span> - produto(s) no carrinho</span>
-              <img src={carrinho} alt="Icone carrinho de compras" />
+              <img
+                className="cartIcon"
+                src={carrinho}
+                alt="Icone carrinho de compras"
+              />
             </CartButton>
           </li>
         </HeaderList>
         <NavMobile className={isMenuOpen ? 'is-open' : ''}>
-          <HeaderList>
-            <li className="mobile-menu-restaurant">
+          <ul>
+            <li>
               <Link to="/" onClick={() => setIsMenuOpen(false)}>
                 Restaurantes
               </Link>
             </li>
-          </HeaderList>
+          </ul>
         </NavMobile>
       </HeaderBar>
       <Hero style={{ backgroundImage: `url(${capaRestaurant?.capa})` }}>
