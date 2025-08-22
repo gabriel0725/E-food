@@ -1,4 +1,5 @@
 import Header from '../../components/Header'
+import Loader from '../../components/Loader'
 import ProductsList from '../../components/ProductsList'
 
 import { useGetFeaturedRestaurantQuery } from '../../services/api'
@@ -24,18 +25,23 @@ export type Restaurant = {
 }
 
 const Home = () => {
-  const { data: restaurantes } = useGetFeaturedRestaurantQuery()
+  const { data: restaurantes, isLoading: isLoadingRestaurant } =
+    useGetFeaturedRestaurantQuery()
 
   if (restaurantes) {
     return (
       <>
         <Header />
-        <ProductsList grid={'2'} restaurants={restaurantes} />
+        <ProductsList
+          isLoading={isLoadingRestaurant}
+          grid={'2'}
+          restaurants={restaurantes}
+        />
       </>
     )
   }
 
-  return <h4>Carregando...</h4>
+  return <Loader />
 }
 
 export default Home

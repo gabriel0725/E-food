@@ -11,7 +11,7 @@ export const Container = styled.section`
   }
 `
 
-export const List = styled.ul<Omit<Props, 'restaurants'>>`
+export const List = styled.ul<Omit<Props, 'restaurants' | 'isLoading'>>`
   display: grid;
   grid-template-columns: ${(props) =>
     props.grid === '2'

@@ -7,11 +7,13 @@ import { useState } from 'react'
 import close from '../../assets/images/fechar.png'
 import { useDispatch } from 'react-redux'
 import { add, open } from '../../store/reducers/cart'
+import Loader from '../Loader'
 
 export type Props = {
   restaurants?: Restaurant[]
   grid: '2' | '3'
   foods?: Restaurant[]
+  isLoading: boolean
 }
 
 interface ModalState {
@@ -31,7 +33,7 @@ export const formataPreco = (preco = 0) => {
   }).format(preco)
 }
 
-const ProductsList = ({ restaurants, foods, grid }: Props) => {
+const ProductsList = ({ restaurants, foods, grid, isLoading }: Props) => {
   const [modal, setModal] = useState<ModalState>({
     id: 0,
     isVisible: false,
@@ -89,6 +91,10 @@ const ProductsList = ({ restaurants, foods, grid }: Props) => {
       closeModal(),
       dispatch(open())
     )
+  }
+
+  if (isLoading) {
+    return <Loader />
   }
 
   return (

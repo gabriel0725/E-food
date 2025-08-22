@@ -19,6 +19,7 @@ import carrinho from '../../assets/images/carrinhos.svg'
 import { open } from '../../store/reducers/cart'
 import { RootReducer } from '../../store'
 import { useState } from 'react'
+import Loader from '../Loader'
 
 const DetailHeader = () => {
   const dispatch = useDispatch()
@@ -37,7 +38,7 @@ const DetailHeader = () => {
   } = useGetRestaurantQuery(id!)
 
   if (isLoading) {
-    return <p>Carregando...</p>
+    return <Loader />
   }
 
   if (isError || !capaRestaurant) {
