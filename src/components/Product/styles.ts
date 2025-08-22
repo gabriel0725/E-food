@@ -1,9 +1,5 @@
 import styled from 'styled-components'
-import { breakpoints, cores } from '../../styles'
-
-type CardProps = {
-  grid: '2' | '3'
-}
+import { cores } from '../../styles'
 
 export const Card = styled.div<{ grid: '2' | '3' }>`
   background-color: ${(props) =>

@@ -11,10 +11,6 @@ type RowProps = {
   marginTop?: string
 }
 
-type TabButtonProps = {
-  isActive: boolean
-}
-
 export const Overlay = styled.div`
   position: absolute;
   top: 0;
