@@ -30,7 +30,6 @@ const Cart = () => {
   const [loadingStep, setLoadingStep] = useState(false)
   const navigate = useNavigate()
   const [purchase, { data, isLoading }] = usePurchaseMutation()
-
   const dispatch = useDispatch()
 
   const goToStep = (nextStep: typeof step) => {
@@ -42,7 +41,7 @@ const Cart = () => {
   }
 
   const goToFinish = () => goToStep('finish')
-  const goToPayment = () => goToStep('payment')
+  // 🔹 removemos o uso direto de goToPayment aqui
   const goToAddress = () => goToStep('address')
   const goToCart = () => goToStep('cart')
 
@@ -118,17 +117,18 @@ const Cart = () => {
   const getTotalPrice = () =>
     items.reduce((acc, item) => acc + (item.preco || 0), 0)
 
+  // 🔹 Somente essa função pode avançar para payment
   const handleSubmitAddress = async () => {
-    await form.validateForm()
+    const errors = await form.validateForm()
+
     if (
-      !form.errors.receiver &&
-      !form.errors.description &&
-      !form.errors.city &&
-      !form.errors.zipCode &&
-      !form.errors.number
+      !errors.receiver &&
+      !errors.description &&
+      !errors.city &&
+      !errors.zipCode &&
+      !errors.number
     ) {
-      form.handleSubmit()
-      goToPayment()
+      goToStep('payment') // só avança se estiver válido
     } else {
       form.setTouched(
         {
@@ -144,13 +144,14 @@ const Cart = () => {
   }
 
   const handleSubmitPayment = async () => {
-    await form.validateForm()
+    const errors = await form.validateForm()
+
     if (
-      !form.errors.cardName &&
-      !form.errors.cardNumber &&
-      !form.errors.code &&
-      !form.errors.month &&
-      !form.errors.year
+      !errors.cardName &&
+      !errors.cardNumber &&
+      !errors.code &&
+      !errors.month &&
+      !errors.year
     ) {
       form.handleSubmit()
       goToFinish()
@@ -218,7 +219,7 @@ const Cart = () => {
             )}
 
             {step === 'address' && (
-              <form onSubmit={form.handleSubmit}>
+              <form>
                 {/* Campos do endereço */}
                 <InputGroup>
                   <Title>Entrega</Title>
@@ -313,9 +314,11 @@ const Cart = () => {
             )}
 
             {step === 'payment' && (
-              <form onSubmit={form.handleSubmit}>
+              <form>
                 <InputGroup>
-                  <Title>{`Pagamento - Valor a pagar ${formataPreco(getTotalPrice())}`}</Title>
+                  <Title>{`Pagamento - Valor a pagar ${formataPreco(
+                    getTotalPrice()
+                  )}`}</Title>
                   <label htmlFor="cardName">Nome no cartão</label>
                   <input
                     id="cardName"
